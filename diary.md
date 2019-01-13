@@ -7,7 +7,7 @@ SmaxiFlover
 ### 2019-01-11
 
 Using Centra-C (C<sub>3</sub>) as the root, we have the following table
-, where f is in the range [C<sub>2</sub>, C<sub>3</sub>]
+, where $f$ is in the range [C<sub>2</sub>, C<sub>3</sub>]
 
 | mul |    Key_Level    |  $f$   | $f_{12}$ |   $e$   |
 |:---:|:---------------:|:------:|:--------:|:-------:|
