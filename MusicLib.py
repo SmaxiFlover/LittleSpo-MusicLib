@@ -1,7 +1,5 @@
-from MLC import *
-import math
-import winsound
-import threading
+from MLC import MLC
+import wave, math, struct, winsound, time
 
 class MusicLib:
 
@@ -9,68 +7,100 @@ class MusicLib:
     Python Music Library
     powered by Smaxi Flover 陆一洲
     Project Start from 2019-01-02
-    > Aimed to help research of contemporary music
+    > Aimed to help contemporary music research
     """
 
     def keyToInt(keystr):
-        patch = 1 if keystr[0] == "#" else -1 if keystr[0] == "b" else 0
-        return patch + MLC.KEYN_TO_N[keystr[-2]] + int(keystr[-1]) * MLC.KEYN_NUMBER
+        patch = 1 if keystr[1] == "#" else -1 if keystr[1] == "b" else 0
+        return patch + MLC.KEYN_TO_N[keystr[0]] + int(keystr[-1]) * MLC.KEY_NUMBER
 
     def intToKey(keynum):
-        keyn = keynum % MLC.KEYN_NUMBER
-        leveln = keynum // MLC.KEYN_NUMBER
+        keyn = keynum % MLC.KEY_NUMBER
+        leveln = keynum // MLC.KEY_NUMBER
         return MLC.N_TO_KEYN[keyn] + str(leveln)
 
-    def keyToHz(keystr):
+    def keyToFreq(keystr):
         key_dist = MusicLib.keyToInt(keystr) - MusicLib.keyToInt("A3")
-        return MLC.A3_Hz * 2 ** ( key_dist / MLC.KEY_NUMBER)
+        return MLC.A3_Freq * 2 ** ( key_dist / MLC.KEY_NUMBER)
 
-    def HzToKey(keyHz):
-        key_dist = math.log(keyHz / MLC.A3_Hz, 2) * MLC.KEY_NUMBER
+    def freqToKey(keyFreq):
+        key_dist = math.log(keyFreq / MLC.A3_Freq, 2) * MLC.KEY_NUMBER
         return MusicLib.intToKey(round(key_dist) + MusicLib.keyToInt("A3"))
 
-    def MoveToMid(keyHz):
-        std_lower_bound = MusicLib.keyToHz("C3")
+    def moveToMid(keyFreq):
+        std_lower_bound = MusicLib.keyToFreq("C3")
         std_upper_bound = std_lower_bound * 2
-        while (keyHz >= std_upper_bound):
-            keyHz /= 2
-        while (keyHz < std_lower_bound):
-            keyHz *= 2
-        return keyHz
+        while (keyFreq >= std_upper_bound):
+            keyFreq /= 2
+        while (keyFreq < std_lower_bound):
+            keyFreq *= 2
+        return keyFreq
 
-    def StdHz(keyHz):
-        return MusicLib.keyToHz(MusicLib.HzToKey(keyHz))
+    def stdFreq(keyFreq):
+        return MusicLib.keyToFreq(MusicLib.freqToKey(keyFreq))
 
-    def keyHzError(keyHz):
-        return math.log(keyHz / MusicLib.StdHz(keyHz), 2) * MLC.KEY_NUMBER
+    def keyFreqError(keyFreq):
+        return math.log(keyFreq / MusicLib.stdFreq(keyFreq), 2) * MLC.KEY_NUMBER
 
     class Note:
 
-        def __init__(self):
-            self.Hz = 0
+        def __init__(self, freq = 0, name = ""):
+            # Freq and name cannot be defined simultaneously
+            self.f = 0
+            if (freq != 0):
+                self.f = freq
+            elif (name != ""):
+                self.f = keyToFreq(name)
 
-        def Hz(self):
-            return self.Hz
+        def freq(self):
+            return self.f
 
-        def keyName(self):
-            return MusicLib.HzToKey(self.Hz)
+        def name(self):
+            return MusicLib.freqToKey(self.f)
 
         def error(self):
-            return MusicLib.keyHzError(self.Hz)
+            return MusicLib.keyFreqError(self.f)
 
-    def beepHzArr(Hz_arr, sound_len):
-        for i in Hz_arr:
-            winsound.Beep(round(i), sound_len)
+        def demo(self, demoName = True, demoFreq = True, demoError = True):
+            demo_s = ""
+            if demoName:
+                demo_s += "%5s" % self.name()
+            if demoFreq:
+                demo_s += "%9.2lf" % self.freq()
+            if demoError:
+                demo_s += "%8.2lf%%" % (self.error() * 100)
+            print(demo_s)
 
-Hz_arr = []
+    def playChord(nodes, fn="test.wav", length = 500, loudness = 500):
+        f=wave.open(fn,'w')
+        f.setnchannels(1)
+        f.setsampwidth(2)
+        f.setframerate(MLC.SAMPLE_RATE)
+        f.setcomptype('NONE','Not Compressed')
 
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 2))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 3))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 5))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 7))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 11))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 13))
-Hz_arr.append(MusicLib.MoveToMid(MusicLib.keyToHz("C3") / 17))
-#Hz_arr.sort()
-for i in Hz_arr:
-    print("%s %.2f %.2f %.2f%%" % (MusicLib.HzToKey(i), i, MusicLib.StdHz(i), MusicLib.keyHzError(i) * 100))
+        frame_length = round(length / 1000 * MLC.SAMPLE_RATE)
+        frame_loudness = round(loudness / 1000 * MLC.SAMPLE_LOUDNESS_UPPER_BOUND)
+        frames = b''
+
+        for i in range(frame_length):
+            cur_wav = 0
+            for j in nodes:
+                cur_wav += math.sin(2 * math.pi * i * j.freq() / MLC.SAMPLE_RATE)
+            cur_wav /= len(nodes)
+            frames += struct.pack('h', round(frame_loudness * cur_wav))
+
+        f.writeframesraw(frames + b'')
+        f.close()
+        winsound.PlaySound("test.wav", flags = 1)
+        time.sleep(length / 1000)
+
+nodes = []
+
+nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 2)))
+nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 3)))
+nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 5)))
+nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 5 / 3)))
+#nodes.sort()
+for i in nodes:
+    i.demo()
+MusicLib.playChord(nodes, length = 1000)
