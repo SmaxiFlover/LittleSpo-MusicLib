@@ -71,8 +71,8 @@ class MusicLib:
                 demo_s += "%8.2lf%%" % (self.error() * 100)
             print(demo_s)
 
-    def playChord(nodes, fn="test.wav", length = 500, loudness = 500):
-        f=wave.open(fn,'w')
+    def playChord(nodes, file_name="test.wav", length = 500, loudness = 500):
+        f=wave.open(file_name,'w')
         f.setnchannels(1)
         f.setsampwidth(2)
         f.setframerate(MLC.SAMPLE_RATE)
