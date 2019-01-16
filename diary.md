@@ -33,3 +33,27 @@ Using Centra-C (C<sub>3</sub>) as the root, we have the following table
 ### 2019-01-14
 
 Add the function `PlayChord(nodes, file_name, length, loudness)` to the library.
+
+### 2019-01-15
+
+`step` Data for *Twelve-tone Equal Temperament* in *Just Inotation*.
+
+| step | pure | maj  | min | dim  |  aug  |
+|:----:|:----:|:----:|:---:|:----:|:-----:|
+|  II  |      |  -7  | -15 |      |       |
+| III  |      |  5   | 3/5 |      |       |
+|  IV  |  -3  |      |     |      | -9/25 |
+|  V   |  3   |      |     | 9/25 |       |
+|  VI  |      | -3/5 | -5  |      |       |
+| VII  |      |  15  |  7  |      |       |
+
+| step | pure |  maj  |  min   | dim  |  aug  |
+|:----:|:----:|:-----:|:------:|:----:|:-----:|
+|  II  |      | -1.75 | -1.875 |      |       |
+| III  |      | 1.25  |  1.2   |      |       |
+|  IV  | -1.5 |       |        |      | -1.44 |
+|  V   | 1.5  |       |        | 1.44 |       |
+|  VI  |      | -1.2  | -1.25  |      |       |
+| VII  |      | 1.875 |  1.75  |      |       |
+
+As `expreiment2` shows in the `experiment.py`, pop

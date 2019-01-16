@@ -55,6 +55,13 @@ class MusicLib:
         def freq(self):
             return self.f
 
+        def setFreq(self, freq = 0, name = ""):
+            self.f = 0
+            if (freq != 0):
+                self.f = freq
+            elif (name != ""):
+                self.f = keyToFreq(name)
+
         def name(self):
             return MusicLib.freqToKey(self.f)
 
@@ -93,14 +100,3 @@ class MusicLib:
         f.close()
         winsound.PlaySound("test.wav", flags = 1)
         time.sleep(length / 1000)
-
-if __name__ == "__main__":
-    nodes = []
-    nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 2)))
-    nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 3)))
-    nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 5)))
-    nodes.append(MusicLib.Note(freq = MusicLib.moveToMid(MusicLib.keyToFreq("C3") * 5 / 3)))
-    #nodes.sort()
-    for i in nodes:
-        i.demo()
-    MusicLib.playChord(nodes, length = 1000)
