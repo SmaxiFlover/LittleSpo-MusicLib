@@ -9,7 +9,7 @@ def experiment1():
         for j in nodes:
             j.demo()
         print("")
-        MusicLib.playChord(nodes, length = 1000)
+        MusicLib.playNodesVertically(nodes, length = 1000)
 
         def func(x):
             return x / 3
@@ -31,7 +31,7 @@ def experiment2():
         for i in chord:
             i.demo()
         for i in range(times):
-            MusicLib.playChord(chordFreq(chord_math), length = length)
+            MusicLib.playNodesVertically(chordFreq(chord_math), length = length)
         print()
 
     def func(chord_math, step = (0)):
@@ -40,26 +40,13 @@ def experiment2():
             step = [3] * len(chord_math)
         for i in range(len(chord_math)):
             res.append(chord_math[i] + math.log(step[i], 2))
-            """
-            if (step[i] > 0):
-                res.append(chord_math[i] + math.log(step[i], 2))
-            elif (step[i] < 0):
-                res.append(chord_math[i] - math.log(-step[i], 2))
-            else:
-                res.append(chord_math[i])
-            """
         return tuple(res)
 
-    step1 = ( # pop 62514733 in c minor using """ above
-        (2, 3, 3/5), (-3, -3, -3), (-3, -3, -9/25), (-3, -3, -3),
-        (-3, -3, -3), (-9/25, -3, -3), (-3, -9/25, -9/25), (0, 0, 0),
-    )
-
-    step2_1 = ( ## pop 4566 in c minor
+    step1 = ( ## pop 4566 in c minor
         (1/3, 5/3, 1), (9, 9, 9), (5/9, 1/15, 5/9), (1, 1, 1)
     )
 
-    step2_2 = ( ## pop 4536 in c minor
+    step2 = ( ## pop 4536 in c minor
         (1/5, 1, 3/5), (9, 9, 9), (5/3, 1/5, 5/3), (1/3, 1/3, 1/3)
     )
 
@@ -67,11 +54,7 @@ def experiment2():
         (2, 3, 5), (1/3, 1/3, 1/3), (9, 9, 9), (1/3, 1/3, 1/3)
     )
 
-    step4 = ( ## 1451 in C Major
-        (2, 3, 5), (9, 9, 9), (9, 9, 9), (9, 9, 9)
-    )
-
-    step = step4
+    step = step3
 
     for i in range(len(step)):
         chord_math = func(chord_math, step[i])

@@ -22,3 +22,10 @@ class MLC:
 
     SAMPLE_RATE = 44100
     SAMPLE_LOUDNESS_UPPER_BOUND = 32767
+
+    CHORD_MAP = {
+        "Maj" : (0, 4, 7),
+        "min" : (0, 3, 7),
+        "aug" : (0, 4, 8),
+        "dim" : (0, 3, 6)
+    }
