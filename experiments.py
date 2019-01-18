@@ -67,7 +67,11 @@ def experiment2():
         (2, 3, 5), (1/3, 1/3, 1/3), (9, 9, 9), (1/3, 1/3, 1/3)
     )
 
-    step = step2_2
+    step4 = ( ## 1451 in C Major
+        (2, 3, 5), (9, 9, 9), (9, 9, 9), (9, 9, 9)
+    )
+
+    step = step4
 
     for i in range(len(step)):
         chord_math = func(chord_math, step[i])
